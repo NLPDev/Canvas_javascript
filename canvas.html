@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<body style="padding: 0; margin: 0;">
+
+<canvas id="myCanvas" width="1000" height="500" style="border:1px solid #000000;">
+Your browser does not support the HTML5 canvas tag.
+</canvas>
+<div style="position: absolute; top: 0px; left: 0px; width: 500px; height: 500px; z-index: 2">
+  <div id="rect1" style="top: 30px; left: 50px; background: #0f0; width: 40px; height: 60px; position: absolute;">
+    </div>
+  <div id="rect2" style="top: 140px; left: 150px; background: #0f0; width: 40px; height: 70px; position: absolute;">
+    </div>
+  <div id="rect3" style="top: 70px; left: 140px; background: #0f0; width: 40px; height: 20px; position: absolute;">
+    </div>
+  <div id="rect4" style="top: 100px; left: 280px; background: #0f0; width: 150px; height: 90px; position: absolute;">
+    </div>
+</div>
+
+
+
+
+
+<script>
+var getAbsoluteOffsetFromBody = function( el )
+{   // finds the offset of el from the body or html element
+    var _x = 0;
+    var _y = 0;
+    while( el && !isNaN( el.offsetLeft ) && !isNaN( el.offsetTop ) )
+    {
+        _x += el.offsetLeft - el.scrollLeft + el.clientLeft;
+        _y += el.offsetTop - el.scrollTop + el.clientTop;
+        el = el.offsetParent;
+    }
+    return { top: _y, left: _x };
+}
+
+var angle = function (x1, y1, x2, y2)
+{
+  var ss=x1*x2+y1*y2;
+  var dd=(x1*x1+y1*y1)*(x2*x2+y2*y2);
+  dd=Math.sqrt(dd);
+  return ss/dd;
+}
+var canvas = document.getElementById("myCanvas");
+  var ctx = canvas.getContext('2d');
+ // ctx.fillStyle = "#FF0000";
+  //ctx.strokeStyle="#FF0000";
+  
+  
+   
+  
+  var left, top;
+  var obj = document.getElementById("rect1");
+  var offset = getAbsoluteOffsetFromBody(obj);
+  
+  var pad=10;//consider padding
+  
+  let rex=[], rey=[], wdt=[], hgt=[];
+  var st="rect", str="";
+
+  var rn=4;//the number of rectangle
+
+  for(let i=1;i<=rn;i++){
+    str=st+i.toString();
+        
+    obj=document.getElementById(str);
+    offset=getAbsoluteOffsetFromBody(obj);
+    
+    rex[i]=offset["left"]-pad;
+    rey[i]=offset["top"]-pad;
+
+    wdt[i]=document.getElementById(str).offsetWidth;
+    hgt[i]=document.getElementById(str).offsetHeight;
+
+    
+  }
+  
+  var tot=0, x0=10000, y0=10000, flag=[], xx=[], yy=[],fst;
+  var dx=1, dy=0;
+
+  for(let i=1;i<=rn;i++){
+    xx[tot]=rex[i];
+    yy[tot]=rey[i];
+    tot++;
+
+    xx[tot]=rex[i]+wdt[i]+2*pad;
+    yy[tot]=rey[i];
+    tot++;
+
+    xx[tot]=rex[i];
+    yy[tot]=rey[i]+hgt[i]+2*pad;
+    tot++;
+
+    xx[tot]=rex[i]+wdt[i]+2*pad;
+    yy[tot]=rey[i]+hgt[i]+2*pad;
+    tot++;
+
+    console.log(rex[i]);
+    console.log(rey[i]);
+    console.log(i);
+    console.log(xx[tot-1]);
+    console.log(yy[tot-1]);
+  }
+
+  for(let i=0;i<tot;i++){
+    if(x0>xx[i]){
+      x0=xx[i]; y0=yy[i];
+      fst=i;
+    }
+    else if(x0==xx[i] && y0>yy[i]){
+      y0=yy[i];
+      fst=i;
+    }
+    flag[i]=0;
+  }
+
+  flag[fst]=1;
+
+  ctx.beginPath();
+  ctx.moveTo(x0, y0);
+
+  var nxt=-1;
+  
+  for(;;){
+    if(nxt==fst)break;
+
+    
+    var mm=-10, nn;
+
+    for(let i=0;i<tot;i++){
+      if(flag[i]==1)continue;
+
+      nn=angle(dx, dy, xx[i]-x0, yy[i]-y0);
+      if(mm<nn){
+        mm=nn;
+        nxt=i;
+      }
+
+    }
+
+    ctx.lineTo(xx[nxt], yy[nxt]);
+    dx=xx[nxt]-x0;
+    dy=yy[nxt]-y0;
+    x0=xx[nxt];
+    y0=yy[nxt];
+
+    flag[nxt]=1;
+    flag[fst]=0;
+  }
+  
+//
+  ctx.closePath();
+
+  ctx.fill();
+  ctx.lineWidth = 2;
+  ctx.fillStyle = '#8ED6FF';
+  ctx.fill();
+  ctx.strokeStyle = 'blue';
+  ctx.stroke();
+
+</script>
+</body>
+</html>
