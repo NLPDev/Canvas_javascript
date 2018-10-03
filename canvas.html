@@ -6,13 +6,13 @@
 Your browser does not support the HTML5 canvas tag.
 </canvas>
 <div style="position: absolute; top: 0px; left: 0px; width: 500px; height: 500px; z-index: 2">
-  <div id="rect1" style="top: 30px; left: 50px; background: #0f0; width: 40px; height: 60px; position: absolute;">
+  <div id="rect1" style="top: 100px; left: 50px; background: #0f0; width: 40px; height: 60px; position: absolute;">
     </div>
   <div id="rect2" style="top: 140px; left: 150px; background: #0f0; width: 40px; height: 70px; position: absolute;">
     </div>
   <div id="rect3" style="top: 70px; left: 140px; background: #0f0; width: 40px; height: 20px; position: absolute;">
     </div>
-  <div id="rect4" style="top: 100px; left: 280px; background: #0f0; width: 150px; height: 90px; position: absolute;">
+  <div id="rect4" style="top: 270px; left: 280px; background: #0f0; width: 150px; height: 90px; position: absolute;">
     </div>
 </div>
 
@@ -21,7 +21,7 @@ Your browser does not support the HTML5 canvas tag.
 
 
 <script>
-var getAbsoluteOffsetFromBody = function( el )
+var getAbsoluteOffsetFromBody = function( el )      //get x, y coordinate from div
 {   // finds the offset of el from the body or html element
     var _x = 0;
     var _y = 0;
@@ -34,19 +34,17 @@ var getAbsoluteOffsetFromBody = function( el )
     return { top: _y, left: _x };
 }
 
-var angle = function (x1, y1, x2, y2)
+var angle = function (x1, y1, x2, y2)       //the cos value of two vector
 {
   var ss=x1*x2+y1*y2;
   var dd=(x1*x1+y1*y1)*(x2*x2+y2*y2);
   dd=Math.sqrt(dd);
   return ss/dd;
 }
+
+
 var canvas = document.getElementById("myCanvas");
   var ctx = canvas.getContext('2d');
- // ctx.fillStyle = "#FF0000";
-  //ctx.strokeStyle="#FF0000";
-  
-  
    
   
   var left, top;
@@ -66,7 +64,7 @@ var canvas = document.getElementById("myCanvas");
     obj=document.getElementById(str);
     offset=getAbsoluteOffsetFromBody(obj);
     
-    rex[i]=offset["left"]-pad;
+    rex[i]=offset["left"]-pad;      //consider padding
     rey[i]=offset["top"]-pad;
 
     wdt[i]=document.getElementById(str).offsetWidth;
@@ -76,14 +74,14 @@ var canvas = document.getElementById("myCanvas");
   }
   
   var tot=0, x0=10000, y0=10000, flag=[], xx=[], yy=[],fst;
-  var dx=1, dy=0;
+  var dx=0, dy=1;
 
-  for(let i=1;i<=rn;i++){
+  for(let i=1;i<=rn;i++){       //get all rectangle's coordinate so we can get 4 * (numbers rectangle) 
     xx[tot]=rex[i];
     yy[tot]=rey[i];
     tot++;
 
-    xx[tot]=rex[i]+wdt[i]+2*pad;
+    xx[tot]=rex[i]+wdt[i]+2*pad;    //consider padding
     yy[tot]=rey[i];
     tot++;
 
@@ -93,16 +91,13 @@ var canvas = document.getElementById("myCanvas");
 
     xx[tot]=rex[i]+wdt[i]+2*pad;
     yy[tot]=rey[i]+hgt[i]+2*pad;
-    tot++;
-
-    console.log(rex[i]);
-    console.log(rey[i]);
-    console.log(i);
-    console.log(xx[tot-1]);
-    console.log(yy[tot-1]);
+    tot++;                        
+    
   }
 
-  for(let i=0;i<tot;i++){
+  //get all rectangle's coordinate, so the problem will be draw canvas all of these coordinate
+
+  for(let i=0;i<tot;i++){         //find the leftest and topest point
     if(x0>xx[i]){
       x0=xx[i]; y0=yy[i];
       fst=i;
@@ -127,7 +122,7 @@ var canvas = document.getElementById("myCanvas");
     
     var mm=-10, nn;
 
-    for(let i=0;i<tot;i++){
+    for(let i=0;i<tot;i++){           //find the outest point (consider one direction. In this problem, find the first of point of right by angle)
       if(flag[i]==1)continue;
 
       nn=angle(dx, dy, xx[i]-x0, yy[i]-y0);
